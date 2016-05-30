@@ -3,12 +3,15 @@ const DiscordClient = require('discord.io');
 const moment = require('moment');
 const emoji = require('node-emoji');
 const mathjs = require('mathjs');
+const CleverBot = require('cleverbot.io');
 
 const bot = new DiscordClient({
     autorun: true,
-    email: config.get('discord.email'),
-    password: config.get('discord.password'),
+    token: config.get('discord.token'),
 });
+
+const clever = new CleverBot('oer8pvtEbyCskunk', 't5dQ7A8VnobCXPdD21hISsjbt1EvYCfx');
+clever.setNick('TF2Discord');
 
 const localData = require('./lib/data')('./data');
 
@@ -22,7 +25,7 @@ const chat = (id, message, noEmoji) => {
 const idFromName = (name) => {
   name = name.replace(/[@<>]/g, '').toLowerCase();
   return Object.keys(mainServer.members).reduce((chosen, id) => {
-    return (mainServer.members[id].nick || '').toLowerCase() == name || id == name ? id : chosen;
+    return (mainServer.members[id].nick || '').toLowerCase() == name || id == name || id == name.slice(1) ? id : chosen;
   }, null);
 }
 const channelFromName = (name) => {
@@ -80,9 +83,13 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     var show = message.indexOf('!debug') == 0;
     sayMath(userID, message, math, show ? mathError : null, channelID, show);
   } else if (message == '!git') {
-    chat(channelID, 'https://github.com/demipixel/twowdiscordbot');
+    chat(channelID, 'https://github.com/demipixel/TWOWDiscordBot');
   } else if (message == '!help') {
-    chat(channelID, '`!hey, !info, !hug <user>, !joined <user>, any math expression, !debug <math expr>`');
+    chat(channelID, '`!hey, !info, !git, !hug <user>, !joined <user>, any math expression, !debug <math expr>`');
+  } else if (message.match(/^!chat .+/)) {
+    sayCleverBot(message.match(/!chat (.+)/)[1], userID, channelID);
+  } else if (message.match(/^!bet .+/)) {
+    chat(channelID, 'Lol gotcha');
   }
 });
 
@@ -106,8 +113,18 @@ var sayMath = (userID, str, math, mathError, channelID, debug) => {
       else return str;
     }, '');
     var arr = output.split('\n');
-    if (output) chat(channelID, '<@'+userID+'>\n'+arr.slice(0, 5).join('\n')+(arr.length > 5 ? '\n...' : ''));
+    if (output) chat(channelID, '<@'+userID+'>\n'+arr.slice(0, 5).map(str=>str.trim().slice(0,900).trim()+(str.trim().length > 900 ? '...' : '')).join('\n')+(arr.length > 5 ? '\n...' : ''));
   } else if (typeof math != 'function' || debug) {
     chat(channelID, '<@'+userID+'>: '+math);
   }
+}
+
+var sayCleverBot = (str, userID, channelID) => {
+  clever.ask(str, (err, resp) => {
+    if (err) {
+      console.log(err);
+      chat(channelID, '<@'+userID+'>, I don\'t know how to respond...');
+    }
+    else chat(channelID, '<@'+userID+'>, '+resp.replace(/\*/g, '\\*'));
+  });
 }
