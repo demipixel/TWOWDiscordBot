@@ -95,6 +95,8 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     chat(channelID, 'Lol gotcha');
   } else if (message.match(/^!mini/)) {
     mini.message(user, userID, channelID, message.replace('!mini', '').trim(), pm);
+  } else if (pm && message == 'a' || message == 'b') {
+    mini.message(user, userID, channelID, message, pm);
   }
 });
 
