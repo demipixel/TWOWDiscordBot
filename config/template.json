@@ -3,5 +3,7 @@
     "email": "",
     "password": "",
     "server": ""
-  }
+  },
+
+  "admins": []
 }

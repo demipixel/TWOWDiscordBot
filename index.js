@@ -14,6 +14,7 @@ const clever = new CleverBot('oer8pvtEbyCskunk', 't5dQ7A8VnobCXPdD21hISsjbt1EvYC
 clever.setNick('TF2Discord');
 
 const localData = require('./lib/data')('./data');
+var mini;
 
 var mainServer;
 const chat = (id, message, noEmoji) => {
@@ -23,9 +24,9 @@ const chat = (id, message, noEmoji) => {
   });
 };
 const idFromName = (name) => {
-  name = name.replace(/[@<>]/g, '').toLowerCase();
+  name = name.replace(/[@<>]/g, '').toLowerCase().trim();
   return Object.keys(mainServer.members).reduce((chosen, id) => {
-    return (mainServer.members[id].nick || '').toLowerCase() == name || id == name || id == name.slice(1) ? id : chosen;
+    return (mainServer.members[id].nick || '').toLowerCase() == name || id == name || id == name.slice(1) ? id.trim() : chosen;
   }, null);
 }
 const channelFromName = (name) => {
@@ -41,9 +42,11 @@ const DEMIPIXEL_ID = '125696820901838849';
 bot.on('ready', function() {
     console.log(bot.username + ' [' + bot.id + '] has started up!');
     mainServer = bot.servers[config.get('discord.server')];
+    mini = require('./lib/mini')(mainServer, chat, localData, idFromName, DEMIPIXEL_ID);
 });
 
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
+  if (!mainServer) return;
   var channel = mainServer.channels[channelID];
   if (!channel) channel = bot.directMessages[channelID];
   if (!channel) return;
@@ -85,11 +88,13 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
   } else if (message == '!git') {
     chat(channelID, 'https://github.com/demipixel/TWOWDiscordBot');
   } else if (message == '!help') {
-    chat(channelID, '`!hey, !info, !git, !hug <user>, !joined <user>, any math expression, !debug <math expr>`');
+    chat(channelID, '`!hey, !info, !git, !hug <user>, !joined <user>, any math expression, !debug <math expr>, !chat`');
   } else if (message.match(/^!chat .+/)) {
     sayCleverBot(message.match(/!chat (.+)/)[1], userID, channelID);
   } else if (message.match(/^!bet .+/)) {
     chat(channelID, 'Lol gotcha');
+  } else if (message.match(/^!mini/)) {
+    mini.message(user, userID, channelID, message.replace('!mini', '').trim(), pm);
   }
 });
 
