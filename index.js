@@ -3,14 +3,17 @@ const DiscordClient = require('discord.io');
 const moment = require('moment');
 const emoji = require('node-emoji');
 const mathjs = require('mathjs');
-const CleverBot = require('cleverbot.io');
+const CleverBot = require('cleverbot-node');
 
 const bot = new DiscordClient({
     autorun: true,
     token: config.get('discord.token'),
 });
 
-const clever = new CleverBot('oer8pvtEbyCskunk', 't5dQ7A8VnobCXPdD21hISsjbt1EvYCfx');
+const clever = new CleverBot();
+CleverBot.prepare(function() {
+  console.log('CleverBot is online');
+})
 //clever.setNick('TWOWDiscord'+Date.now());
 
 const localData = require('./lib/data')('./data');
@@ -135,11 +138,10 @@ var sayMath = (userID, str, math, mathError, channelID, debug) => {
 }
 
 var sayCleverBot = (str, userID, channelID) => {
-  clever.ask(str, (err, resp) => {
-    if (err) {
-      console.log(err);
+  clever.write(str, (resp) => {
+    if (!resp) {
       chat(channelID, '<@'+userID+'>, I don\'t know how to respond...');
     }
-    else chat(channelID, '<@'+userID+'>, '+resp.replace(/\*/g, '\\*'));
+    else chat(channelID, '<@'+userID+'>, '+resp.message.replace(/\*/g, '\\*'));
   });
 }

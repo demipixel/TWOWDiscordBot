@@ -9,7 +9,7 @@
   "author": "DemiPixel <luke5227@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "cleverbot.io": "^1.0.4",
+    "cleverbot-node": "^0.2.2",
     "config": "^1.20.4",
     "discord.io": "^1.11.1",
     "mathjs": "^3.2.1",
