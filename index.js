@@ -11,7 +11,7 @@ const bot = new DiscordClient({
 });
 
 const clever = new CleverBot('oer8pvtEbyCskunk', 't5dQ7A8VnobCXPdD21hISsjbt1EvYCfx');
-clever.setNick('TWOWDiscord'+Date.now());
+//clever.setNick('TWOWDiscord'+Date.now());
 
 const localData = require('./lib/data')('./data');
 var mini;
