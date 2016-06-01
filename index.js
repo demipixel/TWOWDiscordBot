@@ -42,11 +42,15 @@ const DEMIPIXEL_ID = '125696820901838849';
 bot.on('ready', function() {
   console.log(bot.username + ' [' + bot.id + '] has started up!');
   mainServer = bot.servers[config.get('discord.server')];
-  mini = require('./lib/mini')(mainServer, chat, localData, idFromName, DEMIPIXEL_ID);
+  mini = require('./lib/mini')(mainServer, chat, localData, idFromName, bot, clever, DEMIPIXEL_ID);
 
   bot.setPresence({
     game: 'Mini TWOW'
   });
+});
+
+bot.on('debug', rawEvent => {
+  console.log(rawEvent); // Testing for now
 });
 
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
