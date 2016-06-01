@@ -40,9 +40,13 @@ const chooseRandom = (arr) => {
 const DEMIPIXEL_ID = '125696820901838849';
 
 bot.on('ready', function() {
-    console.log(bot.username + ' [' + bot.id + '] has started up!');
-    mainServer = bot.servers[config.get('discord.server')];
-    mini = require('./lib/mini')(mainServer, chat, localData, idFromName, DEMIPIXEL_ID);
+  console.log(bot.username + ' [' + bot.id + '] has started up!');
+  mainServer = bot.servers[config.get('discord.server')];
+  mini = require('./lib/mini')(mainServer, chat, localData, idFromName, DEMIPIXEL_ID);
+
+  bot.setPresence({
+    game: 'Mini TWOW'
+  });
 });
 
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
