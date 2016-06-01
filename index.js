@@ -86,7 +86,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     var id = idFromName(match[1]);
     if (id == null) chat(channelID, 'Couldn\'t find '+match[1].replace(/[@<>]/g, '')+'!');
     else chat(channelID, '<@'+id+'> joined this discord '+moment(mainServer.members[id].joined_at).fromNow()+'.');
-  } else if ((math !== null || message.indexOf('!debug') == 0) && (math !== null ? math.toString() : '') != message.replace(/"/g, '')) {
+  } else if ((math !== null || message.indexOf('!debug') == 0) && (math != undefined ? math.toString() : '') != message.replace(/"/g, '')) {
     var show = message.indexOf('!debug') == 0;
     sayMath(userID, message, math, show ? mathError : null, channelID, show);
   } else if (message == '!git') {
