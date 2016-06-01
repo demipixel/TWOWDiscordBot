@@ -50,7 +50,7 @@ bot.on('ready', function() {
 });
 
 bot.on('debug', rawEvent => {
-  console.log(rawEvent); // Testing for now
+  //console.log(rawEvent); // Testing for now
 });
 
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
