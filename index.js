@@ -104,7 +104,7 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
     sayCleverBot(message.match(/!chat (.+)/)[1], userID, channelID);
   } else if (message.match(/^!bet .+/)) {
     chat(channelID, 'Lol gotcha');
-  } else if (message.match(/^!mini/)) {
+  } else if (message.match(/^!mini/i)) {
     mini.message(user, userID, channelID, message.replace('!mini', '').trim(), pm);
   } else if (pm && (message.toLowerCase() == 'a' || message.toLowerCase() == 'b' || message.toLowerCase() == 'next')) {
     mini.message(user, userID, channelID, message, pm);
