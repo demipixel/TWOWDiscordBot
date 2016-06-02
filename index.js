@@ -52,9 +52,7 @@ bot.on('ready', function() {
   });
 });
 
-bot.on('debug', rawEvent => {
-  //console.log(rawEvent); // Testing for now
-});
+bot.on('disconnect', () => bot.connect()); // Reconnect!
 
 bot.on('message', function(user, userID, channelID, message, rawEvent) {
   if (!mainServer) return;
