@@ -1,9 +1,16 @@
 {
   "discord": {
-    "email": "",
-    "password": "",
-    "server": ""
+    "token": "",
+    "server": "",
+
+    "annouce": ""
   },
 
-  "admins": []
+  "admins": [],
+
+  "youtube": {
+    "key": "",
+    "channels": [],
+    "channelNames": []
+  }
 }

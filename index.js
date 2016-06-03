@@ -4,6 +4,7 @@ const moment = require('moment');
 const emoji = require('node-emoji');
 const mathjs = require('mathjs');
 const CleverBot = require('cleverbot-node');
+const Youtube = require('youtube-api');
 
 const bot = new DiscordClient({
     autorun: true,
@@ -13,8 +14,12 @@ const bot = new DiscordClient({
 const clever = new CleverBot();
 CleverBot.prepare(function() {
   console.log('CleverBot is online');
-})
-//clever.setNick('TWOWDiscord'+Date.now());
+});
+
+const auth = Youtube.authenticate({
+  type: 'key',
+  key: config.get('youtube.key')
+});
 
 const localData = require('./lib/data')('./data');
 var mini;
@@ -142,4 +147,49 @@ var sayCleverBot = (str, userID, channelID) => {
     }
     else chat(channelID, '<@'+userID+'>, '+resp.message.replace(/\*/g, '\\*'));
   });
+}
+
+var lastChecked = [];
+function checkChannel(channelId) {
+  Youtube.activities.list({
+    part: 'snippet',
+    channelId: config.get('youtube.channels')[channelId]
+  }, (err, data) => {
+    if (err) {
+      if (err.code != 'ENOTFOUND' && err.code != 503 && err.code != 'EAI_AGAIN') console.log(JSON.stringify(err));
+    } else {
+      if (!data) { console.log('Didn\'t get data!'); return; }
+      else if (!data[0]) return;
+      if (data[0].snippet.type != 'upload') return;
+      if (data[0].snippet.publishedAt == lastChecked[channelId]) return;
+
+      var time = (new Date(data[0].snippet.publishedAt)).getTime();
+      if (Date.now() - time < 1000*60*2) { // Last 2 minutes
+        lastChecked[channelId] = data[0].snippet.publishedAt;
+        if (data[0].snippet.liveBroadcastContent != 'none' && typeof data[0].snippet.liveBroadcastContent != 'undefined') return;
+
+        var id = data[0].snippet.thumbnails.default.url.match(/\/vi\/(.*?)\//i);
+        if (!id) {
+          console.log('Invalid ID!');
+          console.log(data[0]);
+          return;
+        } else {
+          id = id[1];
+        }
+        // Now we have a video!
+        const url = 'https://www.youtube.com/watch?v=' + id;
+        const channelName = config.get('youtube.channelNames')[channelId];
+
+        chat(config.get('discord.announce'), '@everyone A new "'+channelName+'" video is out!\n'+url);
+      }
+    }
+  });
+}
+
+for (var i = 0; i < config.get('youtube.channels').length; i++) {
+  ((index) => {
+    setInterval(() => {
+      checkChannel(index);
+    }, 5*1000);
+  })(i);
 }
