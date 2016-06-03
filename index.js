@@ -116,6 +116,19 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 
 function parsePM(user, userID, channelID, message, rawEvent) {
   if (userID != DEMIPIXEL_ID) return;
+  if (message.indexOf('say ') == 0) {
+    var match = message.match(/say ([^ ]+) (.+)/);
+    if (!match) {
+      chat(userID, 'Format: `say <channel> <message>`');
+      return;
+    }
+    var channel = channelFromName(match[1]);
+    if (!channel) {
+      chat(userID, 'That is not a valid channel!');
+      return;
+    }
+    chat(channel, match[2]);
+  }
 }
 
 
