@@ -82,11 +82,11 @@ bot.on('message', function(user, userID, channelID, message, rawEvent) {
 
   var math = null;
   var mathError = null;
-  try {
+  /*try {
     math = mathjs.eval(message.replace('!debug ', '').trim(), {});
   } catch (e) {
     mathError = e;
-  }
+  }*/
 
   if (message == '!hey') {
     chat(channelID, 'Hey there, <@'+userID+'>!');
