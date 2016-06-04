@@ -182,19 +182,19 @@ function checkChannel(channelId) {
       if (err.code != 'ENOTFOUND' && err.code != 503 && err.code != 'EAI_AGAIN') console.log(JSON.stringify(err));
     } else {
       if (!data) { console.log('Didn\'t get data!'); return; }
-      else if (!data[0]) return;
-      if (data[0].snippet.type != 'upload') return;
-      if (data[0].snippet.publishedAt == lastChecked[channelId]) return;
+      else if (!data.items[0]) return;
+      if (data.items[0].snippet.type != 'upload') return;
+      if (data.items[0].snippet.publishedAt == lastChecked[channelId]) return;
 
-      var time = (new Date(data[0].snippet.publishedAt)).getTime();
+      var time = (new Date(data.items[0].snippet.publishedAt)).getTime();
       if (Date.now() - time < 1000*60*2) { // Last 2 minutes
-        lastChecked[channelId] = data[0].snippet.publishedAt;
-        if (data[0].snippet.liveBroadcastContent != 'none' && typeof data[0].snippet.liveBroadcastContent != 'undefined') return;
+        lastChecked[channelId] = data.items[0].snippet.publishedAt;
+        if (data.items[0].snippet.liveBroadcastContent != 'none' && typeof data.items[0].snippet.liveBroadcastContent != 'undefined') return;
 
-        var id = data[0].snippet.thumbnails.default.url.match(/\/vi\/(.*?)\//i);
+        var id = data.items[0].snippet.thumbnails.default.url.match(/\/vi\/(.*?)\//i);
         if (!id) {
           console.log('Invalid ID!');
-          console.log(data[0]);
+          console.log(data.items[0]);
           return;
         } else {
           id = id[1];
@@ -213,16 +213,13 @@ function checkChannel(channelId) {
 var botStream = null;
 
 function playTenSeconds(url) {
-  console.log('Playing '+url);
   try {
     const wstream = fs.createWriteStream('video.mp3');
     const strm = youtubeStream(url).pipe(wstream);
     strm.on('finish', () => {
       child_process.exec('ffmpeg -t 0:10 -i video.mp3 -y trimmed.mp3', (err, stdout, stderr) => {
-        console.log('Executed');
         if (err) chat(DEMIPIXEL_ID, 'Could not convert audio!\n'+(err?err.toString():null)+'\n'+(stderr?stderr.toString():null));
         else {
-          console.log('Playing audio file');
           botStream.stopAudioFile();
           botStream.playAudioFile('trimmed.mp3');
         }
