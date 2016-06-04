@@ -1,3 +1,4 @@
+const child_process = require('child_process');
 const config = require('config');
 const DiscordClient = require('discord.io');
 const moment = require('moment');
@@ -5,6 +6,8 @@ const emoji = require('node-emoji');
 const mathjs = require('mathjs');
 const CleverBot = require('cleverbot-node');
 const Youtube = require('youtube-api');
+const youtubeStream = require('youtube-audio-stream');
+const fs = require('fs');
 
 const bot = new DiscordClient({
     autorun: true,
@@ -54,6 +57,13 @@ bot.on('ready', function() {
 
   bot.setPresence({
     game: 'Mini TWOW'
+  });
+  const voiceChannel = '184755239952318465';
+
+  bot.joinVoiceChannel(voiceChannel, () => {
+    bot.getAudioContext({ channel: voiceChannel, stereo: true}, strm => {
+      botStream = strm;
+    });
   });
 });
 
@@ -194,9 +204,33 @@ function checkChannel(channelId) {
         const channelName = config.get('youtube.channelNames')[channelId];
 
         chat(config.get('discord.announce'), '@everyone A new "'+channelName+'" video is out!\n'+url);
+        playTenSeconds(url);
       }
     }
   });
+}
+
+var botStream = null;
+
+function playTenSeconds(url) {
+  console.log('Playing '+url);
+  try {
+    const wstream = fs.createWriteStream('video.mp3');
+    const strm = youtubeStream(url).pipe(wstream);
+    strm.on('finish', () => {
+      child_process.exec('ffmpeg -t 0:10 -i video.mp3 -y trimmed.mp3', (err, stdout, stderr) => {
+        console.log('Executed');
+        if (err) chat(DEMIPIXEL_ID, 'Could not convert audio!\n'+(err?err.toString():null)+'\n'+(stderr?stderr.toString():null));
+        else {
+          console.log('Playing audio file');
+          botStream.stopAudioFile();
+          botStream.playAudioFile('trimmed.mp3');
+        }
+      });
+    });
+  } catch(err) {
+    chat(DEMIPIXEL_ID, 'Could not play youtube video!\n'+err.toString());
+  }
 }
 
 for (var i = 0; i < config.get('youtube.channels').length; i++) {
