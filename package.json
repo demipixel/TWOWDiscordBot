@@ -11,7 +11,7 @@
   "dependencies": {
     "cleverbot-node": "^0.2.2",
     "config": "^1.20.4",
-    "discord.io": "^1.11.1",
+    "discord.io": "^1.12.0",
     "gm": "^1.22.0",
     "mathjs": "^3.2.1",
     "moment": "^2.13.0",
