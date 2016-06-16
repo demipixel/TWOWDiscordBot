@@ -15,9 +15,13 @@ const bot = new DiscordClient({
 });
 
 const clever = new CleverBot();
+try {
 CleverBot.prepare(function() {
   console.log('CleverBot is online');
 });
+} catch (err) {
+  console.log('Cannot put CleverBot online!');
+}
 
 const auth = Youtube.authenticate({
   type: 'key',
