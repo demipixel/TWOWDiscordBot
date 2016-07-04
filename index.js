@@ -62,7 +62,7 @@ bot.on('ready', function() {
   bot.setPresence({
     game: 'Mini TWOW'
   });
-  const voiceChannel = '184755239952318465';
+  const voiceChannel = config.get('discord.voice');
 
   bot.joinVoiceChannel(voiceChannel, () => {
     bot.getAudioContext({ channel: voiceChannel, stereo: true}, strm => {
